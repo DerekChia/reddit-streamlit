@@ -1,0 +1,2 @@
+streamlit
+clickhouse_connect
