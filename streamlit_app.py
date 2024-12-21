@@ -4,7 +4,7 @@ import os
 
 client = clickhouse_connect.get_client(
     host=os.environ["CLICKHOUSE_HOST"],
-    port=os.environ["PORT"],
+    port=os.environ["CLICKHOUSE_PORT"],
     username=os.environ["CLICKHOUSE_USERNAME"],
     password=os.environ["CLICKHOUSE_PASSWORD"],
 )
