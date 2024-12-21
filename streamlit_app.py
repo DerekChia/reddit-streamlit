@@ -22,5 +22,5 @@ df_result = client.query_df(
     "select toStartOfHour(inserted_at) timestamp, count() count from reddit.comments group by 1 order by 2"
 )
 
-chart_data = pd.DataFrame(df_result, columns=["timestamp", "count"])
+chart_data = pd.DataFrame(df_result, x="timestamp", y="count")
 st.bar_chart(chart_data)
