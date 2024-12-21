@@ -9,6 +9,6 @@ client = clickhouse_connect.get_client(
     password=os.environ["CLICKHOUSE_PASSWORD"],
 )
 
-res = client.query("select 1")
+df_result = client.query_df("select reddit.comments limit 10;")
 
-st.write(res.result_rows)
+st.write(df_result)
