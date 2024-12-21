@@ -42,13 +42,6 @@ granularity = st.sidebar.segmented_control(
     default="Minute",
 )
 
-st.sidebar.text_input(
-    "Search",
-    "Some text",
-    key="placeholder",
-)
-
-
 ##
 total_submission_count = client.query(
     "select count() from reddit.submissions"
@@ -116,7 +109,7 @@ col2.line_chart(df_comment_frequency_count, x="timestamp", y="count", color="#22
 
 
 ##
-col1, col2, col3 = st.columns([0.25, 0.25, 0.5])
+col1, col2, col3 = st.columns(3)
 
 col1.subheader("Most submissions", divider="orange")
 query = f"SELECT CAST(raw.subreddit_name_prefixed, 'String') AS subreddit, count() AS count FROM reddit.submissions WHERE inserted_at > now() - interval {timeframe} hour GROUP BY ALL ORDER BY count DESC LIMIT 10"
@@ -128,9 +121,8 @@ query = f"SELECT CAST(raw.subreddit_name_prefixed, 'String') AS subreddit, count
 
 col2.dataframe(client.query_df(query), hide_index=True)
 
-col3.subheader("Hot comments", divider="orange")
-query = f"SELECT CAST(raw.subreddit_name_prefixed, 'String') AS subreddit, substring(raw.link_title::String, 1, 100) as title, max(raw.num_comments::UInt32) as num_comments FROM reddit.comments WHERE inserted_at > now() - interval {timeframe} hour group by all ORDER BY num_comments DESC LIMIT 10"
-
+col3.subheader("Top subscribers", divider="orange")
+query = "select raw._path as subreddit, raw.subscribers::UInt32 as subscribers from reddit.subreddits order by 2 desc limit 10"
 col3.dataframe(client.query_df(query), hide_index=True)
 
 
@@ -151,3 +143,9 @@ st.data_editor(
     hide_index=True,
     use_container_width=True,
 )
+
+##
+st.subheader("Hot comments", divider="orange")
+query = f"SELECT CAST(raw.subreddit_name_prefixed, 'String') AS subreddit, substring(raw.link_title::String, 1, 100) as title, max(raw.num_comments::UInt32) as num_comments FROM reddit.comments WHERE inserted_at > now() - interval {timeframe} hour group by all ORDER BY num_comments DESC LIMIT 10"
+
+st.dataframe(client.query_df(query), hide_index=True)
