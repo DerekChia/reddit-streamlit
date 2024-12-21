@@ -9,6 +9,6 @@ client = clickhouse_connect.get_client(
     password=os.environ["CLICKHOUSE_PASSWORD"],
 )
 
-df_result = client.query_df("select * from reddit.comments limit 10;")
+df_result = client.query_df("select raw::String from reddit.comments limit 10;")
 
 st.write(df_result)
