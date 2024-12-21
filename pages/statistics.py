@@ -124,32 +124,59 @@ col2.line_chart(df_comment_frequency_count, x="timestamp", y="count", color="#22
 col1, col2, col3 = st.columns(3)
 
 col1.subheader("Most submissions", divider="orange")
-query = f"SELECT CAST(raw.subreddit_name_prefixed, 'String') AS subreddit, count() AS count FROM reddit.submissions WHERE inserted_at > now() - interval {timeframe} hour GROUP BY ALL ORDER BY count DESC LIMIT 10"
+query = f"SELECT 'https://reddit.com/' || CAST(raw.subreddit_name_prefixed, 'String') AS subreddit, count() AS count FROM reddit.submissions WHERE inserted_at > now() - interval {timeframe} hour GROUP BY ALL ORDER BY count DESC LIMIT 10"
 
-col1.dataframe(client.query_df(query), hide_index=True)
+col1.data_editor(
+    client.query_df(query),
+    column_config={
+        "subreddit": st.column_config.LinkColumn(
+            "subreddit", display_text=r"https://reddit.com/(.*)"
+        ),
+    },
+    hide_index=True,
+    use_container_width=True,
+)
+
 
 col2.subheader("Most comments", divider="orange")
 query = f"SELECT CAST(raw.subreddit_name_prefixed, 'String') AS subreddit, count() AS count FROM reddit.comments WHERE inserted_at > now() - interval {timeframe} hour GROUP BY ALL ORDER BY count DESC LIMIT 10"
 
-col2.dataframe(client.query_df(query), hide_index=True)
+col2.data_editor(
+    client.query_df(query),
+    column_config={
+        "subreddit": st.column_config.LinkColumn(
+            "subreddit", display_text=r"https://reddit.com/(.*)"
+        ),
+    },
+    hide_index=True,
+    use_container_width=True,
+)
 
 col3.subheader("Top subscribers", divider="orange")
 query = "select raw._path as subreddit, raw.subscribers::UInt32 as subscribers from reddit.subreddits order by 2 desc limit 10"
-col3.dataframe(client.query_df(query), hide_index=True)
+
+col3.data_editor(
+    client.query_df(query),
+    column_config={
+        "subreddit": st.column_config.LinkColumn(
+            "subreddit", display_text=r"https://reddit.com/(.*)"
+        ),
+    },
+    hide_index=True,
+    use_container_width=True,
+)
 
 
 ##
 st.subheader("Recent submissions", divider="orange")
 query = "SELECT raw.subreddit_name_prefixed::String as subreddit, raw.title as title, substring(trimBoth(replaceAll(CAST(raw.selftext, 'String'), '\n', ' ')), 1, 100) AS text, 'https://reddit.com' || raw.permalink::String as link FROM reddit.submissions WHERE text != '' ORDER BY inserted_at DESC LIMIT 10"
 
-df = client.query_df(query)
-
 st.data_editor(
-    df,
+    client.query_df(query),
     column_config={
-        # "subreddit": st.column_config.Column("subreddit", width="small"),
-        # "title": st.column_config.Column("title", width="medium"),
-        # "text": st.column_config.Column("text", width="large"),
+        "subreddit": st.column_config.LinkColumn(
+            "subreddit", display_text=r"https://reddit.com/(.*)"
+        ),
         "link": st.column_config.LinkColumn("Link", display_text="Link"),
     },
     hide_index=True,
@@ -158,6 +185,16 @@ st.data_editor(
 
 ##
 st.subheader("Hot comments", divider="orange")
-query = f"SELECT CAST(raw.subreddit_name_prefixed, 'String') AS subreddit, substring(raw.link_title::String, 1, 100) as title, max(raw.num_comments::UInt32) as num_comments FROM reddit.comments WHERE inserted_at > now() - interval {timeframe} hour group by all ORDER BY num_comments DESC LIMIT 10"
+query = f"SELECT CAST(raw.subreddit_name_prefixed, 'String') AS subreddit, substring(raw.link_title::String, 1, 100) as title, max(raw.num_comments::UInt32) as num_comments, raw.link_url as link_url FROM reddit.comments WHERE inserted_at > now() - interval {timeframe} hour group by all ORDER BY num_comments DESC LIMIT 10"
 
-st.dataframe(client.query_df(query), hide_index=True, use_container_width=True)
+st.data_editor(
+    client.query_df(query),
+    column_config={
+        "subreddit": st.column_config.LinkColumn(
+            "subreddit", display_text=r"https://reddit.com/(.*)"
+        ),
+        "link_url": st.column_config.LinkColumn("Link", display_text="Link"),
+    },
+    hide_index=True,
+    use_container_width=True,
+)
