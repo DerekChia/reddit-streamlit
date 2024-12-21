@@ -11,4 +11,4 @@ client = clickhouse_connect.get_client(
 
 res = client.query("select 1")
 
-st.write(res)
+st.write(res.result_rows)
