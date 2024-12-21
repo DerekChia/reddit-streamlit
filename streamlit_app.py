@@ -11,7 +11,6 @@ def main():
     st.write("test")
 
 
-st.set_page_config(layout="wide")
 pg = st.navigation(
     [
         st.Page(main, title="Main", icon="🔥"),

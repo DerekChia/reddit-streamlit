@@ -152,7 +152,7 @@ col2.data_editor(
     use_container_width=True,
 )
 
-col3.subheader("Top subscribers", divider="orange")
+col3.subheader("Top subscribers of all time", divider="orange")
 query = "select raw._path as subreddit, raw.subscribers::UInt32 as subscribers from reddit.subreddits order by 2 desc limit 10"
 
 col3.data_editor(
