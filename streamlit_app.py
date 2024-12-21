@@ -11,8 +11,9 @@ client = clickhouse_connect.get_client(
     password=os.environ["CLICKHOUSE_PASSWORD"],
 )
 
-st.sidebar.selectbox("Interval", ["hour", "day", "week"], key="interval")
+st.set_page_config(layout="wide")
 
+st.sidebar.selectbox("Interval", ["hour", "day", "week"], key="interval")
 
 df_result = client.query_df("select body, inserted_at from reddit.comments limit 10;")
 st.write(df_result)
