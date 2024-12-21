@@ -19,6 +19,6 @@ df_result = client.query_df("select body, inserted_at from reddit.comments limit
 st.write(df_result)
 
 df_result = client.query_df(
-    "select toStartOfMinute(inserted_at) timestamp, count() count from reddit.comments group by 1 order by 2"
+    "select toStartOfMinute(inserted_at) timestamp, count() count from reddit.comments group by 1 order by 2 limit 10"
 )
 st.bar_chart(df_result, x="timestamp", y="count", use_container_width=True)
