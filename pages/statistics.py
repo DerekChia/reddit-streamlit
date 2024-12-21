@@ -68,6 +68,10 @@ comment_count_last_timeframe = client.query(
     f"select count() from reddit.comments where inserted_at between now() - interval {timeframe*2} hour and now() - interval {timeframe} hour"
 ).result_rows[0][0]
 
+subreddit_tracked = client.query(
+    "select countDistinct(raw._path) from reddit.subreddits"
+).result_rows[0][0]
+
 ##
 df_submission_frequency_count = client.query_df(
     f"select toStartOf{granularity}(inserted_at) timestamp, count() count from reddit.submissions where inserted_at >= now() - interval {timeframe} hour group by 1 order by 1"
@@ -80,21 +84,23 @@ df_comment_frequency_count = client.query_df(
 ##
 st.title("Statistics")
 
-col1, col2, col3, col4 = st.columns(4)
+col1, col2, col3, col4, col5 = st.columns(5)
 
 col1.metric("Total Submissions", total_submission_count)
 col2.metric("Total Comments", total_comment_count)
+col3.metric("Subreddits Tracked", subreddit_tracked)
 
-col3.metric(
+col4.metric(
     f"Submissions in last {timeframe_option_map[timeframe]}",
     submission_count,
     submission_count - submission_count_last_timeframe,
 )
-col4.metric(
+col5.metric(
     f"Comments in last {timeframe_option_map[timeframe]}",
     comment_count,
     comment_count - comment_count_last_timeframe,
 )
+
 
 ##
 col1, col2 = st.columns(2)
@@ -148,4 +154,4 @@ st.data_editor(
 st.subheader("Hot comments", divider="orange")
 query = f"SELECT CAST(raw.subreddit_name_prefixed, 'String') AS subreddit, substring(raw.link_title::String, 1, 100) as title, max(raw.num_comments::UInt32) as num_comments FROM reddit.comments WHERE inserted_at > now() - interval {timeframe} hour group by all ORDER BY num_comments DESC LIMIT 10"
 
-st.dataframe(client.query_df(query), hide_index=True)
+st.dataframe(client.query_df(query), hide_index=True, use_container_width=True)
