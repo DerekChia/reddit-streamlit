@@ -42,6 +42,12 @@ granularity = st.sidebar.segmented_control(
     default="Minute",
 )
 
+if timeframe is None:
+    timeframe = 24
+
+if granularity is None:
+    granularity = "Minute"
+
 ##
 total_submission_count = client.query(
     "select count() from reddit.submissions"
@@ -141,9 +147,9 @@ df = client.query_df(query)
 st.data_editor(
     df,
     column_config={
-        "subreddit": st.column_config.Column("subreddit", width="small"),
-        "title": st.column_config.Column("title", width="medium"),
-        "text": st.column_config.Column("text", width="large"),
+        # "subreddit": st.column_config.Column("subreddit", width="small"),
+        # "title": st.column_config.Column("title", width="medium"),
+        # "text": st.column_config.Column("text", width="large"),
         "link": st.column_config.LinkColumn("Link", display_text="Link"),
     },
     hide_index=True,
