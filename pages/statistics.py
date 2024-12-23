@@ -153,7 +153,7 @@ col2.data_editor(
 )
 
 col3.subheader("Top subscribers of all time", divider="orange")
-query = "select raw._path as subreddit, raw.subscribers::UInt32 as subscribers from reddit.subreddits order by 2 desc limit 10"
+query = "select latest.1 subreddit, latest.2 count from (select argMax((raw._path::String, raw.subscribers::UInt32), inserted_at) as latest from reddit.subreddits group by raw._path::String) order by 2 desc limit 10"
 
 col3.data_editor(
     client.query_df(query),
