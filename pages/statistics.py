@@ -185,7 +185,7 @@ st.data_editor(
 
 ##
 st.subheader("Hot comments", divider="orange")
-query = f"SELECT CAST(raw.subreddit_name_prefixed, 'String') AS subreddit, substring(raw.link_title::String, 1, 100) as title, max(raw.num_comments::UInt32) as num_comments, raw.link_url as link_url FROM reddit.comments WHERE inserted_at > now() - interval {timeframe} hour group by all ORDER BY num_comments DESC LIMIT 10"
+query = f"SELECT CAST(raw.subreddit_name_prefixed, 'String') AS subreddit, substring(raw.link_title::String, 1, 100) as title, max(raw.num_comments::UInt32) as num_comments, raw.link_url::String as link_url FROM reddit.comments WHERE inserted_at > now() - interval {timeframe} hour group by all ORDER BY num_comments DESC LIMIT 10"
 
 st.data_editor(
     client.query_df(query),
