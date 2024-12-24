@@ -36,20 +36,9 @@ st.write("test")
 subreddit = "r/CatAdvice"
 # subreddit = 'r/relationship_advice'
 
-res = client.query(f"""
-    select raw.title::String || ' ' || raw.selftext::String as body from reddit.submissions 
-    where raw.subreddit_name_prefixed::String = '{subreddit}' limit 250
+df_res = client.query_df("""
+    select * from reddit.submissions_summary order by inserted_at desc limit 100
     """)
 
-docs = [result_row[0] for result_row in res.result_rows]
-
-for doc in docs:
-    #     print(call_ollama(f"""
-    #     This is submission in Reddit, is this a problem that someone is reporting? Answer yes or no. Here's the {doc}
-    #     """))
-
-    st.write(
-        call_ollama(f"""
-    Summarize this paragraph in a few words: {doc}
-    """)
-    )
+df_res = df_res.astype({"hash_title_selftext": "str"})
+st.dataframe(df_res, use_container_width=True, height=1000)
