@@ -4,7 +4,6 @@ import os
 from dotenv import load_dotenv
 
 import ollama
-import time
 
 load_dotenv()
 
@@ -31,10 +30,6 @@ st.sidebar.text_input(
 
 st.write("test")
 
-
-# subreddit = 'r/DogAdvice'
-subreddit = "r/CatAdvice"
-# subreddit = 'r/relationship_advice'
 
 df_res = client.query_df("""
     select * from reddit.submissions_summary order by inserted_at desc limit 100
